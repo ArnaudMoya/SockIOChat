@@ -107,6 +107,9 @@
             console.log(data)
             let html = '';
             for (i =0;i < data.length;i++){
+                if(data[i] === $username.val()){
+                    html += '<li class="list-group-item active">'+data[i]+'</li>'
+                }
                 html += '<li class="list-group-item">'+data[i]+'</li>'
             }
             $users.html(html)
