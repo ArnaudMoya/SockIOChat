@@ -19,7 +19,7 @@
 </head>
 <body>
 </body>
-    <div class="container-fluid">
+    <div class="container">
         <div id="userFormArea" class="row">
             <div class="col-12">
                 <form id="userForm">
@@ -33,11 +33,10 @@
             </div>
         </div>
 
+
         <div id="messageArea" class="row">
-
-
-            <div class="col-md-8">
-                <div class="chat" id="chat"></div>
+            <div class="col-sm" style="border: 1rem solid;   " >
+                <div class="chat" id="chat" style="height: 500px; max-height: 500px;overflow: auto;; margin-top: 10px; margin-right: 10px;"></div>
                 <form id="messageForm">
                     <div class="form-group">
                         <label>Enter Message</label>
@@ -48,12 +47,13 @@
                 </form>
             </div>
 
-            <div class="col-md-4">
+            <div class="col-sm">
                 <div class="well">
                     <h3>Online User</h3>
                     <ul class="list-group" id="users"></ul>
                 </div>
         </div>
+
     </div>
 <script>
     $(function () {
@@ -66,6 +66,7 @@
         let $userForm = $('#userForm')
         let $users = $('#users')
         let $username = $('#username')
+        let $userActive;
 
         $messageForm.submit(function (e) {
             e.preventDefault();
@@ -85,8 +86,10 @@
 
             socket.emit('new user', $username.val(), function (data) {
                 if(data){
+                    $userActive = $username.val();
                     $userFormArea.hide();
                     $messageArea.show();
+                    $username.val('')
                 }
             })
 
@@ -95,7 +98,8 @@
 
 
         socket.on('new message', function (data) {
-            if(data.user === $username.val()){
+
+            if(data.user === $userActive){
                 $chat.append('<div class="alert alert-dark" role="alert"><strong>'+data.user+': <strong>'+data.msg+'</div>')
             }else{
                 $chat.append('<div class="alert alert-primary" role="alert"><strong>'+data.user+': <strong>'+data.msg+'</div>')
@@ -107,10 +111,12 @@
             console.log(data)
             let html = '';
             for (i =0;i < data.length;i++){
-                if(data[i] === $username.val()){
+                if(data[i] === $userActive){
                     html += '<li class="list-group-item active">'+data[i]+'</li>'
+                }else{
+                    html += '<li class="list-group-item">'+data[i]+'</li>'
                 }
-                html += '<li class="list-group-item">'+data[i]+'</li>'
+
             }
             $users.html(html)
         })
